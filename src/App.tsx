@@ -1,17 +1,24 @@
-import './App.css'
-import { Canvas } from '@react-three/fiber'
+import './index.css';
+import { Canvas } from '@react-three/fiber';
+import Experience from './Experience';
+import Interface from './Interface';
 
 function App() {
   return (
     <>
-      <Canvas>
-        <mesh>
-          <torusKnotGeometry />
-          <meshNormalMaterial />
-        </mesh>
+      <Canvas
+        camera={{
+          fov: 45,
+          near: 0.1,
+          far: 200,
+          position: [-4, 3, 6],
+        }}
+      >
+        <Experience />
       </Canvas>
+      <Interface />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
