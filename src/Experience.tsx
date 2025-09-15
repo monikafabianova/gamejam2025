@@ -2,6 +2,7 @@ import {
   GizmoHelper,
   GizmoViewport,
   OrbitControls,
+  Environment,
   MeshReflectorMaterial,
   TransformControls,
 } from '@react-three/drei';
@@ -28,17 +29,21 @@ const Experience = () => {
 
   const boxColor = useGame((state) => state.color);
   const setBoxColor = useGame((state) => state.setColor);
+  const { envMapIntensity } = useControls('environment map', {
+    envMapIntensity: { value: 3.5, min: 0, max: 12 },
+  });
 
   return (
     <>
+      <Environment
+        background
+        files={'environmentMap/kloofendal_48d_partly_cloudy_puresky_1k.hdr'}
+      />
+
       {perfVisible && <Perf position='top-left' />}
       <GroundCells />
       {/* controls */}
       <OrbitControls makeDefault />
-
-      {/* lights */}
-      <directionalLight position={[1, 2, 3]} intensity={1.5} />
-      <ambientLight />
 
       {/* box */}
       <mesh
@@ -48,7 +53,10 @@ const Experience = () => {
         onDoubleClick={() => setBoxColor('hotpink')}
       >
         <boxGeometry />
-        <meshStandardMaterial color={boxColor} />
+        <meshStandardMaterial
+          color={boxColor}
+          envMapIntensity={envMapIntensity}
+        />
       </mesh>
       <TransformControls object={cubeRef} mode='translate' showZ={true} />
       {/* floor */}
@@ -60,6 +68,7 @@ const Experience = () => {
           mixBlur={0.9}
           color='grey'
           mirror={0.5}
+          envMapIntensity={envMapIntensity}
         />
       </mesh>
 
