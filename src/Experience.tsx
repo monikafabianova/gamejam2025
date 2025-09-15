@@ -1,67 +1,85 @@
 import {
   GizmoHelper,
   GizmoViewport,
-  OrbitControls,
   MeshReflectorMaterial,
-  TransformControls,
+  KeyboardControls,
 } from '@react-three/drei';
 import { useControls } from 'leva';
-import { useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Perf } from 'r3f-perf';
-import useGame from './store/useGame.ts';
-import * as THREE from 'three';
 import GroundCells from './libs/GroundCells.tsx';
+import Ecctrl from 'ecctrl';
+import { Physics, RigidBody } from '@react-three/rapier';
+import { Model } from './components/model.tsx';
 
 const Experience = () => {
-  const cubeRef = useRef<THREE.Object3D>(null!);
+  /**
+   * Delay physics
+   */
+  const [pausedPhysics, setPausedPhysics] = useState(true);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setPausedPhysics(false);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   const { perfVisible } = useControls({
     perfVisible: true,
   });
 
-  useFrame((_state, delta) => {
-    if (cubeRef.current) {
-      cubeRef.current.rotation.y += delta;
-    }
-  });
+  const keyboardMap = [
+    { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
+    { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
+    { name: 'leftward', keys: ['ArrowLeft', 'KeyA'] },
+    { name: 'rightward', keys: ['ArrowRight', 'KeyD'] },
+    { name: 'jump', keys: ['Space'] },
+    { name: 'run', keys: ['Shift'] },
+  ];
 
-  const boxColor = useGame((state) => state.color);
-  const setBoxColor = useGame((state) => state.setColor);
+  const { physics } = useControls('World settings', {
+    physics: true,
+  });
 
   return (
     <>
       {perfVisible && <Perf position='top-left' />}
       <GroundCells />
-      {/* controls */}
-      <OrbitControls makeDefault />
 
       {/* lights */}
       <directionalLight position={[1, 2, 3]} intensity={1.5} />
       <ambientLight />
 
-      {/* box */}
-      <mesh
-        position-y={-0.5001}
-        ref={cubeRef}
-        onClick={() => setBoxColor('yellow')}
-        onDoubleClick={() => setBoxColor('hotpink')}
-      >
-        <boxGeometry />
-        <meshStandardMaterial color={boxColor} />
-      </mesh>
-      <TransformControls object={cubeRef} mode='translate' showZ={true} />
-      {/* floor */}
-      <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={10}>
-        <planeGeometry args={[1, 1]} />
-        <MeshReflectorMaterial
-          resolution={512}
-          blur={[1000, 1000]}
-          mixBlur={0.9}
-          color='grey'
-          mirror={0.5}
-        />
-      </mesh>
+      <Physics paused={pausedPhysics} debug={physics} timeStep={'vary'}>
+        <KeyboardControls map={keyboardMap}>
+          <Ecctrl
+            /**
+             * NOTE:
+             * bug with position parameter, where it affects the character animation load
+             * uncomment/comment to see
+             */
+            debug
+            animated
+            position={[0, 0, 0]}
+          >
+            <Model />
+          </Ecctrl>
+        </KeyboardControls>
+        {/* floor */}
+        <RigidBody type='fixed' colliders='trimesh'>
+          <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={20}>
+            <planeGeometry args={[1, 10]} />
+            <MeshReflectorMaterial
+              resolution={512}
+              blur={[1000, 1000]}
+              mixBlur={0.9}
+              color='grey'
+              mirror={0.5}
+            />
+          </mesh>
+        </RigidBody>
+      </Physics>
 
       {/* GizmoHelper */}
       <GizmoHelper alignment='bottom-right' margin={[100, 100]}>
