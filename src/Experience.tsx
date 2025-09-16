@@ -41,7 +41,6 @@ const Experience = () => {
   const { physics } = useControls('World settings', {
     physics: true,
   });
-
   return (
     <>
       {perfVisible && <Perf position='top-left' />}
@@ -53,20 +52,10 @@ const Experience = () => {
 
       <Physics paused={pausedPhysics} debug={physics} timeStep={'vary'}>
         <KeyboardControls map={keyboardMap}>
-          <Ecctrl
-            /**
-             * NOTE:
-             * bug with position parameter, where it affects the character animation load
-             * uncomment/comment to see
-             */
-            debug
-            animated
-            position={[0, 0, 0]}
-          >
+          <Ecctrl debug animated>
             <Model />
           </Ecctrl>
         </KeyboardControls>
-        {/* floor */}
         <RigidBody type='fixed' colliders='trimesh'>
           <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={20}>
             <planeGeometry args={[1, 10]} />

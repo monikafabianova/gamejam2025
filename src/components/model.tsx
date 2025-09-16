@@ -26,14 +26,13 @@ type Props = ThreeElements['group'];
 export function Model(props: Props) {
   const group = useRef<THREE.Group>(null!);
   const { nodes, materials, animations } = useGLTF(
-    '/y-bot.glb'
+    '/y-bot_fixed.glb'
   ) as unknown as GLTFResult;
   const { actions } = useAnimations(animations, group);
 
   /**
    * animation setup
    */
-
   const curAnimation = useGame((state) => state.curAnimation);
   const resetAnimation = useGame((state) => state.reset);
   const initializeAnimationSet = useGame(
@@ -45,23 +44,27 @@ export function Model(props: Props) {
       idle: 'idle',
       walk: 'walking',
       run: 'running',
-      jump: 'jump',
+      jump: 'jump_up', //jump start
+      jumpIdle: 'jump_idle', //jump in air
+      jumpLand: 'jump_land', // jump landing
+      fall: 'falling',
     };
   }, []);
 
   useEffect(() => {
     initializeAnimationSet(animationSet);
-    // console.log(curAnimation, animationSet);
-  }, [animationSet, initializeAnimationSet]);
+  }, []);
 
   useEffect(() => {
     //play animation
-    const action = actions[curAnimation ? curAnimation : animationSet.idle];
+    const key = curAnimation ?? animationSet.idle;
+    const action = key ? actions[key] : null;
+
     if (!action) return;
-
-    console.log(action);
-
-    if (curAnimation === animationSet.jump) {
+    if (
+      curAnimation === animationSet.jump ||
+      curAnimation === animationSet.jumpLand
+    ) {
       action.reset().fadeIn(0.2).setLoop(THREE.LoopOnce, 0).play();
       action.clampWhenFinished = true;
     } else {
@@ -79,39 +82,37 @@ export function Model(props: Props) {
       //@ts-expect-error mixer
       action._mixer._listeners = [];
     };
-  }, [curAnimation, actions, animationSet, resetAnimation]);
+  }, [curAnimation]);
 
   return (
     <Suspense fallback={<capsuleGeometry args={[0.3, 0.7]} />}>
-      {/* Head collider */}
-      {/* <BallCollider args={[0.3]} position={[0, 0.45, 0]} /> */}
-      <group ref={group} {...props} dispose={null}>
-        <group name='Scene'>
-          <group
-            name='Armature'
-            rotation={[Math.PI / 2, 0, 0]}
-            scale={0.01}
-            // position={[0, 0, 0]}
-            position-y={-0.95}
-          >
-            <skinnedMesh
-              name='Alpha_Joints'
-              geometry={nodes.Alpha_Joints.geometry}
-              material={materials.Alpha_Joints_MAT}
-              skeleton={nodes.Alpha_Joints.skeleton}
-            />
-            <skinnedMesh
-              name='Alpha_Surface'
-              geometry={nodes.Alpha_Surface.geometry}
-              material={materials.Alpha_Body_MAT}
-              skeleton={nodes.Alpha_Surface.skeleton}
-            />
-            <primitive object={nodes.mixamorigHips} />
-          </group>
-        </group>
+      <group
+        ref={group}
+        {...props}
+        dispose={null}
+        userData={{ camExcludeCollision: true }}
+        name='Armature'
+        rotation={[Math.PI / 2, 0, 0]}
+        scale={0.01}
+        position={[0, 0, 0]}
+        position-y={-0.95}
+      >
+        <skinnedMesh
+          name='Alpha_Joints'
+          geometry={nodes.Alpha_Joints.geometry}
+          material={materials.Alpha_Joints_MAT}
+          skeleton={nodes.Alpha_Joints.skeleton}
+        />
+        <skinnedMesh
+          name='Alpha_Surface'
+          geometry={nodes.Alpha_Surface.geometry}
+          material={materials.Alpha_Body_MAT}
+          skeleton={nodes.Alpha_Surface.skeleton}
+        />
+        <primitive object={nodes.mixamorigHips} />
       </group>
     </Suspense>
   );
 }
 
-useGLTF.preload('/y-bot.glb');
+useGLTF.preload('/y-bot_fixed.glb');
