@@ -56,15 +56,15 @@ const Experience = () => {
             <Model />
           </Ecctrl>
         </KeyboardControls>
-        <RigidBody type='fixed' colliders='trimesh'>
-          <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={20}>
-            <planeGeometry args={[1, 10]} />
+        <RigidBody type='fixed' colliders='cuboid'>
+          <mesh position-y={-1} scale={2}>
+            <boxGeometry args={[10, 0.1, 10]} />
             <MeshReflectorMaterial
               resolution={512}
               blur={[1000, 1000]}
               mixBlur={0.9}
               color='grey'
-              mirror={0.5}
+              mirror={0.2}
             />
           </mesh>
         </RigidBody>
