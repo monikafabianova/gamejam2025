@@ -1,12 +1,16 @@
 import './index.css';
 import { Canvas } from '@react-three/fiber';
 import Experience from './Experience';
-import Interface from './Interface';
+import * as THREE from 'three';
 
 function App() {
   return (
     <>
       <Canvas
+        gl={{ antialias: true }}
+        onCreated={({ gl }) => {
+          gl.outputColorSpace = THREE.SRGBColorSpace;
+        }}
         camera={{
           fov: 45,
           near: 0.1,
@@ -16,7 +20,6 @@ function App() {
       >
         <Experience />
       </Canvas>
-      <Interface />
     </>
   );
 }
