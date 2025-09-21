@@ -3,20 +3,22 @@ import {
   GizmoViewport,
   OrbitControls,
   Environment,
-  MeshReflectorMaterial,
-  TransformControls,
+  KeyboardControls,
 } from '@react-three/drei';
 import { useControls } from 'leva';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { useRef } from 'react';
 import { Perf } from 'r3f-perf';
-import useGame from './store/useGame.ts';
 import * as THREE from 'three';
 import GroundCells from './libs/GroundCells.tsx';
 import Tree from './libs/Tree.tsx';
 import TexturedFBX from './libs/TexturedFBX.tsx';
 import Forest from './libs/Forest.tsx';
 import Ground from './libs/Ground.tsx';
+import { Character } from './components/character.tsx';
+import { Physics, RigidBody } from '@react-three/rapier';
+import Ecctrl from 'ecctrl';
+import { keyboardMap } from './utils/keyboard-map.ts';
 
 export const GROUND_LEVEL = 0;
 
@@ -55,6 +57,10 @@ const Experience = () => {
     repeat: { value: 20, min: 1, max: 100, step: 1 },
   });
 
+  const { physcisDebug } = useControls('physcis', {
+    physcisDebug: false,
+  });
+
   const grassTexture = useLoader(
     THREE.TextureLoader,
     '/cooking_fire_ground_colour.png'
@@ -75,27 +81,22 @@ const Experience = () => {
 
       {perfVisible && <Perf position='top-left' />}
       <GroundCells />
-
-      <Ground size={ground.size} repeat={ground.repeat} />
-
       {/* controls */}
       <OrbitControls makeDefault />
 
-      {/* floor */}
-      <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={10}>
-        <planeGeometry args={[1, 1]} />
-        <MeshReflectorMaterial
-          resolution={512}
-          blur={[1000, 1000]}
-          mixBlur={0.9}
-          color='grey'
-          mirror={0.5}
-          envMapIntensity={envMapIntensity}
-        />
-      </mesh>
+      <Physics debug={physcisDebug} timeStep={'vary'}>
+        <KeyboardControls map={keyboardMap}>
+          <Ecctrl animated mode={'FixedCamera'} characterInitDir={Math.PI}>
+            <Character />
+          </Ecctrl>
+        </KeyboardControls>
+        <RigidBody type='fixed' colliders='cuboid'>
+          <Ground size={ground.size} repeat={ground.repeat} />
+        </RigidBody>
+      </Physics>
 
       <Tree treeNumber={treeNumber} position={[1, GROUND_LEVEL, 1]} />
-      <TexturedFBX url='/morgan_idle.fbx' texture='morgan_colour.png' />
+      {/* <TexturedFBX url='/morgan_idle.fbx' texture='morgan_colour.png' /> */}
       <TexturedFBX
         url='/cooking_fire_mesh.fbx'
         texture='cooking_fire_colour.png'

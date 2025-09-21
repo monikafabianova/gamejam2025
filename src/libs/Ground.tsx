@@ -13,8 +13,8 @@ export default function Ground({
   texture.repeat.set(repeat, repeat);
 
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, GROUND_LEVEL, 0]}>
-      <planeGeometry args={[size, size]} />
+    <mesh position={[0, GROUND_LEVEL, 0]}>
+      <boxGeometry args={[size, 0.1, size]} />
       <meshStandardMaterial map={texture} />
     </mesh>
   );
