@@ -2,11 +2,14 @@ import './index.css';
 import { Canvas } from '@react-three/fiber';
 import Experience from './Experience';
 import * as THREE from 'three';
+import { Leva } from 'leva';
 
 function App() {
   return (
     <>
+      <Leva collapsed />
       <Canvas
+        shadows='soft'
         gl={{ antialias: true }}
         onCreated={({ gl }) => {
           gl.outputColorSpace = THREE.SRGBColorSpace;

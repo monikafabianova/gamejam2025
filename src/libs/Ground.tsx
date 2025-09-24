@@ -13,9 +13,9 @@ export default function Ground({
   texture.repeat.set(repeat, repeat);
 
   return (
-    <mesh position={[0, GROUND_LEVEL, 0]}>
+    <mesh position={[0, GROUND_LEVEL, 0]} receiveShadow>
       <boxGeometry args={[size, 0.1, size]} />
-      <meshStandardMaterial map={texture} />
+      <meshBasicMaterial map={texture} />
     </mesh>
   );
 }

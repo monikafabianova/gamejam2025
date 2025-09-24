@@ -74,6 +74,8 @@ export function Character(props: ThreeElements['group']) {
         rotation={[Math.PI / 2, 0, 0]}
         scale={0.01}
         position-y={-0.95}
+        castShadow
+        receiveShadow
       >
         <skinnedMesh
           name='morgan_low'

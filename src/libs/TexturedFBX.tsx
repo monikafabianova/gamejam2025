@@ -16,7 +16,6 @@ export default function TexturedFBX({
 }: TexturedFBXProps) {
   const baseFbx = useLoader(FBXLoader, url);
   const baseTexture = useLoader(THREE.TextureLoader, texture);
-
   const fbx = baseFbx.clone(true);
   if (props.scale === undefined) {
     props.scale = [0.01, 0.01, 0.01];
