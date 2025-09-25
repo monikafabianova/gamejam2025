@@ -1,58 +1,51 @@
 import * as THREE from 'three';
-import { FireShaderMaterial } from '../utils/fire-shader.ts';
 import { useLayoutEffect, useRef } from 'react';
 import { useFrame, useThree, type ThreeElements } from '@react-three/fiber';
 import { useControls } from 'leva';
+import { SmokeShaderMaterial } from '../utils/smoke-shader.ts';
 
-export const Flame = (props: ThreeElements['points']) => {
+export const Smoke = (props: ThreeElements['points']) => {
   const bufferGeometryRef = useRef<THREE.BufferGeometry>(null!);
 
   const { size, viewport } = useThree();
 
-  const fireShaderRef = useRef<ThreeElements['fireShaderMaterial']>(null!);
+  const smokeShaderRef = useRef<ThreeElements['smokeShaderMaterial']>(null!);
 
-  const {
-    uColorA,
-    uColorB,
-    uLife,
-    uSize,
-    timeMuliplierValue,
-    particlesCount,
-    radius,
-  } = useControls('flame', {
-    uColorA: '#ffbf00',
-    uColorB: '#ff1108',
-    uLife: {
-      value: 0.37,
-      min: 0.1,
-      max: 1.0,
-      step: 0.01,
-    },
-    uSize: {
-      value: 1.6,
-      min: 0.1,
-      max: 10,
-      step: 0.1,
-    },
-    timeMuliplierValue: {
-      value: 1.05,
-      min: 0.01,
-      max: 2,
-      step: 0.001,
-    },
-    particlesCount: {
-      value: 150,
-      min: 50,
-      max: 1000,
-      step: 1,
-    },
-    radius: {
-      value: 0.15,
-      min: 0.01,
-      max: 1,
-      step: 0.01,
-    },
-  });
+  const { uLife, uSize, uTimeCoEfficent, particlesCount, radius } = useControls(
+    'smoke',
+    {
+      uLife: {
+        value: 0.25,
+        min: 0.1,
+        max: 1.0,
+        step: 0.01,
+      },
+      uSize: {
+        value: 0.9,
+        min: 0.1,
+        max: 10,
+        step: 0.1,
+      },
+      uTimeCoEfficent: {
+        value: 0.05,
+        min: 0.01,
+        max: 2,
+        step: 0.001,
+      },
+      particlesCount: {
+        value: 50,
+        min: 10,
+        max: 100,
+        step: 1,
+      },
+      radius: {
+        value: 0.03,
+        min: 0.005,
+        max: 1,
+        step: 0.01,
+      },
+    }
+  );
 
   useLayoutEffect(() => {
     const count = particlesCount;
@@ -63,7 +56,7 @@ export const Flame = (props: ThreeElements['points']) => {
 
     for (let i = 0; i < count; i++) {
       sizeArray[i] = Math.random() * 0.5;
-      timeMultiplier[i] = Math.random() + timeMuliplierValue;
+      timeMultiplier[i] = Math.random();
 
       const shape = new THREE.Cylindrical(
         radius,
@@ -91,27 +84,26 @@ export const Flame = (props: ThreeElements['points']) => {
       bufferGeometryRef.current.setAttribute('position', bufferAttribute);
       bufferGeometryRef.current.setAttribute('aSize', sizeAttribute);
       bufferGeometryRef.current.setAttribute(
-        'timeMultiplier',
+        'aTimeMultiplier',
         timeMultiplierAttribute
       );
     }
-  }, [timeMuliplierValue, particlesCount, radius]);
+  }, [particlesCount, radius]);
 
   useFrame((state) => {
-    fireShaderRef.current.uTime = state.clock.getElapsedTime();
+    smokeShaderRef.current.uTime = state.clock.getElapsedTime();
   });
 
   return (
-    // set render order to 1 so the flame renders last
+    // set render order to 1 so the smoke renders 1 milsec after
     <points {...props} renderOrder={1}>
       <bufferGeometry ref={bufferGeometryRef} />
-      <fireShaderMaterial
-        key={FireShaderMaterial.key}
-        ref={fireShaderRef}
+      <smokeShaderMaterial
+        key={SmokeShaderMaterial.key}
+        ref={smokeShaderRef}
         uSize={uSize}
-        uColorA={new THREE.Color(uColorA)}
-        uColorB={new THREE.Color(uColorB)}
         uLife={uLife}
+        uTimeCoEfficent={uTimeCoEfficent}
         uResolution={[size.width * viewport.dpr, size.height * viewport.dpr]}
         blending={THREE.AdditiveBlending}
         depthWrite={false}

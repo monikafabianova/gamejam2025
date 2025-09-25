@@ -15,7 +15,7 @@ export default function Ground({
   return (
     <mesh position={[0, GROUND_LEVEL, 0]} receiveShadow>
       <boxGeometry args={[size, 0.1, size]} />
-      <meshBasicMaterial map={texture} />
+      <meshStandardMaterial map={texture} />
     </mesh>
   );
 }

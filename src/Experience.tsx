@@ -4,10 +4,11 @@ import {
   OrbitControls,
   Environment,
   KeyboardControls,
+  useHelper,
 } from '@react-three/drei';
 import { useControls } from 'leva';
-import { useFrame, useLoader } from '@react-three/fiber';
-import { useRef } from 'react';
+import { useFrame, useLoader, type ThreeElements } from '@react-three/fiber';
+import { useMemo, useRef } from 'react';
 import { Perf } from 'r3f-perf';
 import * as THREE from 'three';
 import GroundCells from './libs/GroundCells.tsx';
@@ -20,6 +21,7 @@ import { CuboidCollider, Physics, RigidBody } from '@react-three/rapier';
 import Ecctrl from 'ecctrl';
 import { keyboardMap } from './utils/keyboard-map.ts';
 import { Flame } from './libs/flame.tsx';
+import { Smoke } from './libs/smoke.tsx';
 
 export const GROUND_LEVEL = 0;
 
@@ -122,6 +124,26 @@ const Experience = () => {
 
   const fireplacePosition = new THREE.Vector3(-1, GROUND_LEVEL + 0.08, -1);
 
+  //generate points in circle
+  const points = useMemo(() => {
+    const radius = 0.2;
+    const segiments = 7;
+
+    const pointsArray = [];
+
+    for (let i = 0; i < segiments; i++) {
+      const angle = (i / segiments) * Math.PI * 2;
+      const x = Math.cos(angle) * radius;
+      const y = 0.67;
+      const z = Math.sin(angle) * radius;
+      pointsArray.push(new THREE.Vector3(x, y, z));
+    }
+
+    return pointsArray;
+  }, []);
+
+  const lightRef = useRef(null!);
+
   return (
     <>
       <Environment
@@ -132,7 +154,20 @@ const Experience = () => {
           radius: envGround.radius,
           scale: envGround.scale,
         }}
+        environmentIntensity={0.05}
       />
+      <pointLight
+        ref={lightRef}
+        args={[0xffffff, 10, 0, 2]}
+        castShadow
+        position={[1, 4, 1]}
+      />
+      {/* {lightRef.current && (
+        <pointLightHelper
+          renderOrder={2}
+          args={[lightRef.current, 2, 0xff0000]}
+        />
+      )} */}
 
       {perfVisible && <Perf position='top-left' />}
       <GroundCells />
@@ -176,8 +211,27 @@ const Experience = () => {
       <Tree treeNumber={treeNumber} position={[1, GROUND_LEVEL, 1]} />
       {/* fireplace */}
       <group>
+        <group position={[-1, 0, -1]}>
+          <Smoke position={points[0]} />
+          <Smoke position={points[1]} />
+          <Smoke position={points[2]} />
+          <Smoke position={points[3]} />
+          <Smoke position={points[4]} />
+          <Smoke position={points[5]} />
+          <Smoke position={points[6]} />
+        </group>
+
+        {/* <Smoke position={points[5]} /> */}
+
         {/* flame-shader */}
         <Flame position={flamePositon} />
+
+        {/* <Smoke position={[-0.9, 0.75, -0.8]} />
+        <Smoke position={[-0.9, 0.75, -0.8 * 1.5]} />
+        <Smoke position={[-0.8 * 1.5, 0.75, -0.8 * 1.5]} /> */}
+        {/* <Smoke position={[-0.9, 0.75, -0.8]} />
+        <Smoke position={[-0.9, 0.75, -0.8]} /> */}
+
         <TexturedFBX
           scale={0.015}
           url='/cooking_fire_mesh.fbx'
