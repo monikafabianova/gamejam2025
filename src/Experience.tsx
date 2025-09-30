@@ -1,14 +1,12 @@
 import {
   GizmoHelper,
   GizmoViewport,
-  OrbitControls,
   Environment,
   KeyboardControls,
-  useHelper,
 } from '@react-three/drei';
 import { useControls } from 'leva';
-import { useFrame, useLoader, type ThreeElements } from '@react-three/fiber';
-import { useMemo, useRef } from 'react';
+import { useLoader } from '@react-three/fiber';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Perf } from 'r3f-perf';
 import * as THREE from 'three';
 import GroundCells from './libs/GroundCells.tsx';
@@ -40,19 +38,6 @@ const Experience = () => {
 
   const { perfVisible } = useControls({
     perfVisible: true,
-  });
-    const keyboardMap = [
-    { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
-    { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
-    { name: 'leftward', keys: ['ArrowLeft', 'KeyA'] },
-    { name: 'rightward', keys: ['ArrowRight', 'KeyD'] },
-    { name: 'jump', keys: ['Space'] },
-    { name: 'run', keys: ['Shift'] },
-  ];
-  useFrame((_state, delta) => {
-    if (cubeRef.current) {
-      cubeRef.current.rotation.y += delta;
-    }
   });
 
   const { envMapIntensity } = useControls('environment map', {
@@ -161,9 +146,6 @@ const Experience = () => {
 
   const lightRef = useRef(null!);
 
-  const { physics } = useControls('World settings', {
-    physics: true,
-  });
   return (
     <>
       <Environment
@@ -192,10 +174,10 @@ const Experience = () => {
       {perfVisible && <Perf position='top-left' />}
       <GroundCells />
 
-          {/* lights */}
+      {/* lights */}
       <directionalLight position={[1, 2, 3]} intensity={1.5} />
       <ambientLight />
-      <Physics debug={physcisDebug} timeStep={'vary'}>
+      <Physics debug={physcisDebug} timeStep={'vary'} paused={pausedPhysics}>
         <KeyboardControls map={keyboardMap}>
           <Ecctrl
             animated
