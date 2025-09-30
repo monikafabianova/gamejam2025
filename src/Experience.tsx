@@ -26,12 +26,29 @@ import { Smoke } from './libs/smoke.tsx';
 export const GROUND_LEVEL = 0;
 
 const Experience = () => {
-  const cubeRef = useRef<THREE.Object3D>(null!);
+  /**
+   * Delay physics
+   */
+  const [pausedPhysics, setPausedPhysics] = useState(true);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setPausedPhysics(false);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   const { perfVisible } = useControls({
     perfVisible: true,
   });
-
+    const keyboardMap = [
+    { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
+    { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
+    { name: 'leftward', keys: ['ArrowLeft', 'KeyA'] },
+    { name: 'rightward', keys: ['ArrowRight', 'KeyD'] },
+    { name: 'jump', keys: ['Space'] },
+    { name: 'run', keys: ['Shift'] },
+  ];
   useFrame((_state, delta) => {
     if (cubeRef.current) {
       cubeRef.current.rotation.y += delta;
@@ -144,6 +161,9 @@ const Experience = () => {
 
   const lightRef = useRef(null!);
 
+  const { physics } = useControls('World settings', {
+    physics: true,
+  });
   return (
     <>
       <Environment
@@ -171,9 +191,10 @@ const Experience = () => {
 
       {perfVisible && <Perf position='top-left' />}
       <GroundCells />
-      {/* controls */}
-      <OrbitControls makeDefault />
 
+          {/* lights */}
+      <directionalLight position={[1, 2, 3]} intensity={1.5} />
+      <ambientLight />
       <Physics debug={physcisDebug} timeStep={'vary'}>
         <KeyboardControls map={keyboardMap}>
           <Ecctrl
