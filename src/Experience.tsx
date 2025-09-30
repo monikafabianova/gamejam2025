@@ -181,18 +181,9 @@ const Experience = () => {
         <KeyboardControls map={keyboardMap}>
           <Ecctrl
             animated
-            disableFollowCam={true}
-            disableFollowCamPos={{
-              x: -5,
-              y: 5,
-              z: -5,
-            }}
-            disableFollowCamTarget={{
-              x: 0,
-              y: 0,
-              z: 0,
-            }}
+            mode={'FixedCamera'}
             characterInitDir={Math.PI}
+            camInitDir={{ x: Math.PI / 8, y: 0 }}
           >
             <Character />
           </Ecctrl>
