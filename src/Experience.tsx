@@ -37,11 +37,11 @@ const Experience = () => {
   }, []);
 
   const { perfVisible } = useControls({
-    perfVisible: true,
+    perfVisible: false,
   });
 
   const { envMapIntensity } = useControls('environment map', {
-    envMapIntensity: { value: 3.5, min: 0, max: 12 },
+    envMapIntensity: { value: 0.05, min: 0, max: 2, step: 0.001 },
   });
   const envGround = useControls('environment ground', {
     height: { value: 15, min: 0, max: 50 },
@@ -67,52 +67,52 @@ const Experience = () => {
   });
 
   /** this isnt reactive for some reason so values are being set manually in @disableFollowCamPos and @disableFollowCamPos */
-  const {
-    cameraPositionX,
-    cameraPositionY,
-    cameraPositionZ,
-    cameraTargetX,
-    cameraTargetY,
-    cameraTargetZ,
-  } = useControls('camera', {
-    cameraPositionX: {
-      value: 0,
-      min: -100,
-      max: 100,
-      step: 0.1,
-    },
-    cameraPositionY: {
-      value: 0,
-      min: -100,
-      max: 100,
-      step: 0.1,
-    },
-    cameraPositionZ: {
-      value: 0,
-      min: -100,
-      max: 100,
-      step: 0.1,
-    },
+  // const {
+  //   cameraPositionX,
+  //   cameraPositionY,
+  //   cameraPositionZ,
+  //   cameraTargetX,
+  //   cameraTargetY,
+  //   cameraTargetZ,
+  // } = useControls('camera', {
+  //   cameraPositionX: {
+  //     value: 0,
+  //     min: -100,
+  //     max: 100,
+  //     step: 0.1,
+  //   },
+  //   cameraPositionY: {
+  //     value: 0,
+  //     min: -100,
+  //     max: 100,
+  //     step: 0.1,
+  //   },
+  //   cameraPositionZ: {
+  //     value: 0,
+  //     min: -100,
+  //     max: 100,
+  //     step: 0.1,
+  //   },
 
-    cameraTargetX: {
-      value: 0,
-      min: -100,
-      max: 100,
-      step: 0.1,
-    },
-    cameraTargetY: {
-      value: 0,
-      min: -100,
-      max: 100,
-      step: 0.1,
-    },
-    cameraTargetZ: {
-      value: 0,
-      min: -100,
-      max: 100,
-      step: 0.1,
-    },
-  });
+  //   cameraTargetX: {
+  //     value: 0,
+  //     min: -100,
+  //     max: 100,
+  //     step: 0.1,
+  //   },
+  //   cameraTargetY: {
+  //     value: 0,
+  //     min: -100,
+  //     max: 100,
+  //     step: 0.1,
+  //   },
+  //   cameraTargetZ: {
+  //     value: 0,
+  //     min: -100,
+  //     max: 100,
+  //     step: 0.1,
+  //   },
+  // });
 
   const { physcisDebug } = useControls('physcis', {
     physcisDebug: false,
@@ -156,7 +156,7 @@ const Experience = () => {
           radius: envGround.radius,
           scale: envGround.scale,
         }}
-        environmentIntensity={0.05}
+        environmentIntensity={envMapIntensity}
       />
       <pointLight
         ref={lightRef}
