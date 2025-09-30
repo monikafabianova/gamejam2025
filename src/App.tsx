@@ -7,7 +7,7 @@ import { Leva } from 'leva';
 function App() {
   return (
     <>
-      <Leva collapsed />
+      <Leva collapsed hidden />
       <Canvas
         shadows='soft'
         gl={{ antialias: true }}
