@@ -4,7 +4,7 @@ const Interface = () => {
   const setColor = useGame((state) => state.setColor);
 
   return (
-    <div className='fixed bottom-10 left-10 w-[250px] h-[150px] '>
+    <div className='fixed bottom-10 left-10 w-3xs h-40 '>
       <span className='text-xl font-semibold capitalize text-neutral-300'>
         Color picker
       </span>

@@ -18,10 +18,10 @@ body,
 
 .interface {
   position: relative;
-  top: calc(100% - 200px);
-  left: 50px;
-  width: 200px;
-  height: 200px;
+  top: calc(100% - 12.5rem);
+  left: 3.125rem;
+  width: 12.5rem;
+  height: 12.5rem;
   background-color: red;
 }
 
@@ -29,11 +29,11 @@ body,
   position: absolute;
   display: flex;
   justify-content: space-between;
-  bottom: 100px;
-  left: 100px;
+  bottom: 6.25rem;
+  left: 6.25rem;
 
-  width: 200px;
-  height: 50px;
+  width: 12.5rem;
+  height: 3.125rem;
 }
 
 .yellow {
